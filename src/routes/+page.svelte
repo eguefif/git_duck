@@ -3,20 +3,28 @@
 
     let repo = $state('');
     let commits = $state([]);
-    let repo_name = $state('');
+    let repoState = $state('');
+
+  async function getRepoState(e) {
+      if (repo.length == 0) {
+          repo = "/home/eguefif/repo_test_git";
+      }
+      try {
+        return await invoke('get_repo_state', { repo } )
+      } catch(e) {
+        console.log("Error: ", e);
+      }
+
+  }
 
   async function openRepo(e) {
       e.preventDefault()
       if (repo.length == 0) {
           repo = "/home/eguefif/repo_test_git";
       }
-      repo_name = repo;
-      console.log(repo);
       commits = await invoke('list_commits_head', { repo });
-      console.log(commits);
-
+      repoState = await getRepoState();
   }
-
 </script>
 
 <main class="container">
@@ -25,8 +33,7 @@
         <input bind:value={repo} />
         <button type="submit">Open repo</button>
     </form>
-    <p>Repo: {repo_name}</p>
-
+    <p>State: {repoState}</p>
     <ul>
     {#if commits.length > 0 }
         {#each commits as [sha, name]}
